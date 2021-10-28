@@ -19,7 +19,6 @@
 \usepackage{microtype} 
 \usepackage{enumitem}
 
-
 \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
 \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
 \setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
@@ -97,7 +96,7 @@
   % \eaddress[2]{Academy of XXXX, Beijing 100190, China}
 
   \begin{abstract}
-适配器签名能联合签名授权和证据提取两种功能是解决区块链应用(如密码货币)中扩展性差、吞吐量低等问题的重要密码技术, 在区块链应用中具有众多优势, 比如(i)较低的链上成本, (ii)提高交易的可替代性, (iii)突破区块链脚本语言限制. SM2 签名是我国自主设计、具有独特优势、安全高效的国家标准签名算法, 在各种重要信息系统中有着广泛应用. 在本文中, 我们首次基于国密SM2签名构造了适配器签名方案, 并在随机预言机模型下基于SM2的安全性给出安全性证明. 随后, 我们根据SM2签名的结构特点, 采用离线证明技术优化适配器签名方案, 获得可支持离线证明的SM2适配器签名方案. 该方案与现有的 ECDSA 适配器签名相比更加高效. 最后, 我们基于现有适配器签名应用, 分别给出 SM2 适配器签名在区块链中的两种典型应用: 原子交换协议和支付通道网络.  
+适配器签名联合了签名授权和证据提取两种功能, 可用于解决区块链应用 (如密码货币) 中扩展性差、 吞吐量低等问题。相较于其他技术，适配器签名在区块链应用中有以下优点: (i) 降低链上成本, (ii) 提高交易的可替代性, (iii) 突破区块链脚本语言限制. SM2 签名是我国自主设计的国家标准算法, 在各种重要信息系统中有着广泛应用. 在本文中, 我们首次基于国密 SM2 签名构造了适配器签名方案, 并基于SM2的安全性给出其在随机预言机模型下的安全性证明.随后, 我们根据 SM2 签名的结构特点, 采用离线证明技术进行优化, 获得了可支持离线证明的 SM2 适配器签名方案. 该方案与现有的 ECDSA 适配器签名相比更加高效. 最后, 我们给出了SM2适配器签名在区块链中的两种应用: 原子交换协议和支付通道网络. 
   \end{abstract}
 
   % 输入中文关键词
@@ -107,7 +106,7 @@
 
   % 输入英文摘要
   \begin{eabstract}
-   Adapter signature can tie together the authorization with witness extraction and has become an important cryptographic technique for addressing the issues of poor scalability and low transaction throughput in blockchain applications such as cryptocurrency. It has many advantages in blockchain applications, such as (i) low on-chain cost, (ii) improved fungibility of transactions, (iii) advanced functionality beyond the limitation of the blockchain's scripting language. SM2 signature is the Chinese national standard signature algorithm, which is secure and efficient, and has been widely used in various important information systems. In this paper, we first design the adaptor signature based on SM2 signature algorithm, and prove security based on SM2 security under the random oracle model. Then, based on the structure of SM2 signature, we can use offline proof technique to optimize it and get a SM2-based adaptor signature supporting offline proof, which is more efficient than the existing ECDSA-based adapter signature. Finally, we present two typical applications of SM2-based adapter signature in blockchain: atomic swap protocol and payment channel network, based on existing adapter signature applications.
+   Adapter signature ties together the authorization with witness extraction and can be used to solve the problems of poor scalability and low transaction throughput in blockchain applications such as cryptocurrency. Compared with other techniques, adapter signature has many advantages in blockchain applications, such as (i) low on-chain cost, (ii) improved fungibility of transactions, (iii) advanced functionality beyond the limitation of the blockchain's scripting language. SM2 signature is the Chinese national standard signature algorithm and has been widely used in various important information systems. In this paper, we first design the adaptor signature based on SM2 signature algorithm, and prove security based on SM2 security under the random oracle model. Then, based on the structure of SM2 signature, we use offline proof technique to optimize it and get a SM2-based adaptor signature supporting offline proof, which is more efficient than the existing ECDSA-based adapter signature. Finally, we present two applications of SM2-based adapter signature in blockchain: atomic swap protocol and payment channel network.
 
   \end{eabstract}
 
