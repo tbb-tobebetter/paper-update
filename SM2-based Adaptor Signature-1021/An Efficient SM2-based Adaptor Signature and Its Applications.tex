@@ -19,11 +19,11 @@
 \usepackage{microtype} 
 \usepackage{enumitem}
 
+
 \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
 \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
 \setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=1pt}
 \newtheorem{claim}{Claim}
-
 
 \begin{document}
 %% 编辑输入区 %%
@@ -44,7 +44,7 @@
 \begin{frontmatter}
   % 输入中文标题
   % 输入中文标题
-  \title{基于SM2的高效适配器签名及其应用}
+  \title{高效SM2适配器签名及其应用}
 
   % 输入英文标题
   \etitle{An Efficient SM2-based Adaptor Signature and Its Applications}
@@ -96,7 +96,7 @@
   % \eaddress[2]{Academy of XXXX, Beijing 100190, China}
 
   \begin{abstract}
-适配器签名联合了签名授权和证据提取两种功能, 可用于解决区块链应用 (如密码货币) 中扩展性差、 吞吐量低等问题。相较于其他技术，适配器签名在区块链应用中有以下优点: (i) 降低链上成本, (ii) 提高交易的可替代性, (iii) 突破区块链脚本语言限制. SM2 签名是我国自主设计的国家标准算法, 在各种重要信息系统中有着广泛应用. 在本文中, 我们首次基于国密 SM2 签名构造了适配器签名方案, 并基于SM2的安全性给出其在随机预言机模型下的安全性证明.随后, 我们根据 SM2 签名的结构特点, 采用离线证明技术进行优化, 获得了可支持离线证明的 SM2 适配器签名方案. 该方案与现有的 ECDSA 适配器签名相比更加高效. 最后, 我们给出了SM2适配器签名在区块链中的两种应用: 原子交换协议和支付通道网络. 
+  适配器签名, 又名无脚本脚本, 是解决区块链应用 (如密码货币) 中扩展性差、 吞吐量低等问题的重要密码技术. 适配器签名可看作数字签名关于困难关系的扩展, 同时具有签名授权和证据提取两种功能, 在区块链应用中具有以下优点: (i) 降低链上成本, (ii) 提高交易的可替代性, (iii) 突破区块链脚本语言限制. SM2 签名是我国自主设计的国家标准算法, 在各种重要信息系统中有着广泛应用. 在本文中, 我们首次基于国密 SM2 签名构造了适配器签名方案, 并在随机预言机模型下基于SM2的安全性给出安全性证明. 随后, 我们根据 SM2 签名的结构特点, 采用离线证明技术进行优化, 获得了可支持离线证明的 SM2 适配器签名方案. 该方案与现有 ECDSA 适配器签名相比更加高效. 最后, 我们基于现有适配器签名应用, 分别给出 SM2 适配器签名在区块链中的两种典型应用: 原子交换协议和支付通道网络. 
   \end{abstract}
 
   % 输入中文关键词
@@ -106,7 +106,7 @@
 
   % 输入英文摘要
   \begin{eabstract}
-   Adapter signature ties together the authorization with witness extraction and can be used to solve the problems of poor scalability and low transaction throughput in blockchain applications such as cryptocurrency. Compared with other techniques, adapter signature has many advantages in blockchain applications, such as (i) low on-chain cost, (ii) improved fungibility of transactions, (iii) advanced functionality beyond the limitation of the blockchain's scripting language. SM2 signature is the Chinese national standard signature algorithm and has been widely used in various important information systems. In this paper, we first design the adaptor signature based on SM2 signature algorithm, and prove security based on SM2 security under the random oracle model. Then, based on the structure of SM2 signature, we use offline proof technique to optimize it and get a SM2-based adaptor signature supporting offline proof, which is more efficient than the existing ECDSA-based adapter signature. Finally, we present two applications of SM2-based adapter signature in blockchain: atomic swap protocol and payment channel network.
+   Adaptor signature, also known as scriptless scripts, is an important cryptographic technique that can be used to solve the problems of poor scalability and low transaction throughput in blockchain applications such as cryptocurrency. Adaptor signature can be seen as an extension of digital signature on hard relations, and it can tie together the authorization with witness extraction and has many advantages in blockchain applications, such as (i) low on-chain cost, (ii) improved fungibility of transactions, (iii) advanced functionality beyond the limitation of the blockchain's scripting language. SM2 signature is the Chinese national standard signature algorithm and has been widely used in various important information systems. In this paper, we first design the adaptor signature based on SM2 signature algorithm, and prove security based on SM2 security under the random oracle model. Then, based on the structure of SM2 signature, we use offline proof technique to optimize it and get a SM2-based adaptor signature supporting offline proof, which is more efficient than the existing ECDSA-based adapter signature. Finally, based on existing adapter signature applications, we show two applications of SM2-based adapter signature in blockchain: atomic swap protocol and payment channel network.
 
   \end{eabstract}
 
@@ -119,11 +119,12 @@
 \zihao{-5}
 
 \section{引言}
-自 2009 年比特币~\cite{Nak08}系统出现, 其底层的区块链结构引起了广泛关注. 区块链通过巧妙融合密码、共识机制、P2P 网络等关键技术, 具有去中心化、不可篡改、匿名性、可追溯性、开放透明等特点, 有着非常广阔的应用前景. 但相关区块链应用(如密码货币)也面临着可扩展性差、吞度量低等关键的应用问题~\cite{BanoSAAMMD19,GudgeonMRMG19,ZamyatinAZKMKK19,AumayrEEFHMMR20,SG2018}, 比如: 理论上, 比特币的交易吞吐量约为每秒十几笔, 与信用卡每秒数万笔的交易量相比, 低了三个数量级, 严重限制了区块链技术的广泛应用. 区块链上每笔交易可看作某种脚本构成的应用程序, 脚本语言定义了链上可实现的各种功能, 如比特币等支持签名授权的货币转账功能, 以太坊等提供图灵完备的脚本语言, 能够编码更复杂的交易逻辑实现更加丰富的应用功能. 然而, 愈加丰富的功能需要复杂的脚本支持, 导致链上的存储和矿工验证计算成本增加. 针对上述问题, 支付通道网络~\cite{PC2018}通过在链上建立通道, 可实现用户之间通过该通道进行任意次数的链下交易, 是目前最有前景和部署最广泛的解决方案之一, 如比特币的闪电网络~\cite{PD2016}和以太坊的雷电网络~\cite{raidEX}等. 适配器签名作为构建支付通道网络的关键技术, 是目前解决区块链可扩展性差, 减少链上资源等问题的重要工具. 
+自 2009 年比特币~\cite{Nak08}系统出现, 其底层的区块链结构引起了广泛关注. 区块链巧妙地融合了密码、共识机制、P2P 网络等关键技术, 具有去中心化、不可篡改、匿名性、可追溯性、开放透明等特点, 有着非常广阔的应用前景. 但相关区块链应用(如密码货币)也面临着可扩展性差、吞度量低等关键的应用问题~\cite{BanoSAAMMD19,GudgeonMRMG19,ZamyatinAZKMKK19,AumayrEEFHMMR20,SG2018}, 比如: 理论上, 比特币的交易吞吐量约为每秒十几笔, 与信用卡每秒数万笔的交易量相比, 低了三个数量级, 严重限制了区块链技术的广泛应用. 区块链上每笔交易可看作某种脚本构成的应用程序, 脚本语言定义了链上可实现的各种功能, 如比特币等支持签名授权的货币转账功能, 以太坊等提供图灵完备的脚本语言, 能够编码更复杂的交易逻辑实现更加丰富的应用功能. 然而, 愈加丰富的功能需要复杂的脚本支持, 导致链上的存储和矿工验证计算成本增加. 针对上述问题, 支付通道网络~\cite{PC2018}通过在链上建立通道, 可实现用户之间通过该通道进行任意次数的链下交易, 是目前最有前景和部署最广泛的解决方案之一, 如比特币的闪电网络~\cite{PD2016}和以太坊的雷电网络~\cite{raidEX}等. 适配器签名作为构建支付通道网络的关键技术, 是目前解决区块链可扩展性差, 减少链上资源等问题的重要工具. 
 
-适配器签名(adaptor signature, AS), 也称为无脚本脚本(scriptless script), 由Poelstra~\cite{Poelstra2016}首次引入, 并由Aumayr等人~\cite{AumayrEEFHMMR20}给出形式化的定义. 适配器签名可看作是数字签名对困难关系(hard relation)的扩展. 简而言之, 签名者可以使用签名私钥对消息和困难实例进行预签名, 利用困难关系的证据可将预签名值转化为有效的完整签名值, 并可以采用原始签名验证算法进行验证. 同时困难关系的证据可通过预签名值和完整签名值提取. 适配器签名具有以下特性: (i)只有拥有签名私钥的签名者才能生成预签名; (ii)只有拥有困难关系证据的用户才能将预签名值转化为完整签名值; (iii)获得预签名值和完整签名值, 可以验证两者的有效性, 并可提取困难关系的证据. 
+适配器签名(adaptor signature, AS) 由Poelstra~\cite{Poelstra2016}首次引入, 并由Aumayr等人~\cite{AumayrEEFHMMR20}给出形式化的定义. 适配器签名可看作是数字签名对困难关系(hard relation)的扩展. 简而言之, 签名者可以使用签名私钥对消息和困难实例进行预签名, 利用困难关系的证据可将预签名值转化为有效的完整签名值. 同时困难关系的证据可通过预签名值和完整签名值提取. 适配器签名具有以下特性: (i)只有拥有签名私钥的签名者才能生成预签名; (ii)只有拥有困难关系证据的用户才能将预签名值转化为完整签名值; (iii)获得预签名值和完整签名值, 可以验证两者的有效性, 并可提取困难关系的证据. 
 
-在具体应用中, 比如原子交换协议~\cite{Nolan2013,Poelstra2017,DeshpandeH20,Gugger20}, 双方可基于适配器签名实现不同币种的公平交换. 一方 (困难关系选择方) 通过选择困难关系$(Y,y)$并对交换交易进行预签名, 然后将预签名值$\hat{\sigma}_1$发送给另一方; 另一方根据困难实例$Y$也对交换交易进行预签名, 并将预签名值$\hat{\sigma}_2$返回;  困难关系选择方拥有困难关系的证据$y$可将预签名值$\hat{\sigma}_2$转换成交换交易的全签名值$\sigma_2$, 在链上公布签名值$\sigma_2$获得交换的货币; 另一方根据签名值$\sigma_2$和预签名值$\hat{\sigma}_2$可提取证据$y$, 并将预签名值$\hat{\sigma}_1$转换成交换交易的全签名值$\sigma_1$, 在链上公布签名值$\sigma_1$获得交换的货币. 因此, 双方完成公平交换交易. 根据上述应用的介绍, 适配器签名通过将签名授权和证据提取巧妙地结合在一起完成货币交换的复杂操作, 具有减少链上操作, 提高交易的可替代性和突破区块链脚本语言限制等多种优势, 在许多区块链应用中都显示出了重要的应用价值, 如支付通道网络~\cite{DeckerW15,PC2018,AumayrEEFHMMR20}、支付通道网络中的支付路由~\cite{EckeyFHR20,MalavoltaMSKM19,MillerBBKM19}和原子交换协议~\cite{Nolan2013,Poelstra2017,DeshpandeH20,Gugger20}等. 
+在具体应用, 比如原子交换协议~\cite{Nolan2013,Poelstra2017,DeshpandeH20,Gugger20}中, 双方可基于适配器签名实现不同币种的公平交换. 一方 (困难关系选择方) 通过选择困难关系$(Y,y)$对交换交易进行预签名, 然后将预签名值$\hat{\sigma}_1$发送给另一方; 另一方根据困难实例$Y$也对交换交易进行预签名, 并将预签名值$\hat{\sigma}_2$返回;  困难关系选择方拥有困难关系的证据$y$可将预签名值$\hat{\sigma}_2$转换成交换交易的全签名值$\sigma_2$, 在链上公布签名值$\sigma_2$获得交换的货币; 另一方根据签名值$\sigma_2$和预签名值$\hat{\sigma}_2$可提取证据$y$, 并将预签名值$\hat{\sigma}_1$转换成交换交易的全签名值$\sigma_1$, 在链上公布签名值$\sigma_1$获得交换的货币. 至此, 双方完成公平交换交易. 根据上述应用的介绍, 适配器签名
+通过将签名授权和证据提取巧妙地结合在一起完成货币交换的复杂操作, 具有减少链上操作, 提高交易的可替代性和突破区块链脚本语言限制等多种优势, 在许多区块链应用中都显示出了重要的应用价值, 如支付通道网络~\cite{DeckerW15,PC2018,AumayrEEFHMMR20}、支付通道网络中的支付路由~\cite{EckeyFHR20,MalavoltaMSKM19,MillerBBKM19}和原子交换协议~\cite{Nolan2013,Poelstra2017,DeshpandeH20,Gugger20}等. 
 
 
 SM2签名算法~\cite{SM2,SM2-survey}是我国国家密码管理局公布的一种拥有完全自主知识产权的国家标准签名算法. 该算法基于椭圆曲线密码体制, 具有安全性高、签名速度快、占用空间小等优势, 在我国商密领域各类信息系统中有着重要应用. 现有的适配器签名主要基于Schnorr签名~\cite{Sch89,Poelstra2016,AumayrEEFHMMR20,ErwigFHMR2021}、ECDSA签名~\cite{ECDSA,rfc6605,AumayrEEFHMMR20,PA18}, 以及格签名~\cite{DucasLLSSS2018,EsginEE20}等方案构造, 缺少基于SM2算法的适配器签名方案, 限制了SM2算法在区块链场景下的推广应用. 此外, 现有基于ECDSA的适配器签名~\cite{AumayrEEFHMMR20} 在预签名值生成中需要零知识证明保证预签名的正确执行, 导致其预签名操作复杂, 应用效率较低. 秉承着核心技术自主创新、信息安全自主可控的理念, 本文主要探索基于SM2签名设计安全高效的SM2适配器签名方案, 为SM2算法在区块链场景中提供更加高效契合的应用参考, 为设计安全可控的区块链应用提供保障. 
@@ -131,26 +132,26 @@ SM2签名算法~\cite{SM2,SM2-survey}是我国国家密码管理局公布的一�
 
 \section{本文工作}  
 
-在本文中, 我们首次基于国密SM2签名算法构造适配器签名方案, 并在随机预言机模型(random oracle model, ROM)下基于SM2签名的安全性给出适配器签名方案的可证明安全. 然后, 我们根据SM2签名的独特结构, 采用``离线证明技术''对SM2适配器签名进一步优化. 优化后的方案与现有ECDSA适配器签名方案(ECDSA-AS)~\cite{AumayrEEFHMMR20}相比, 在线预签名阶段的计算效率更高, 预签名尺寸更小. 随后, 我们分别对SM2适配器签名和ECDSA适配器签名进行理论和实验对比, 发现优化后的SM2适配器签名的在线预签名操作需要更少的点乘运算, 耗时仅为ECDSA适配器签名的1/4. 我们对相关技术介绍如下：
+在本文中, 我们首次基于国密SM2签名算法构造适配器签名方案, 并在随机预言机模型(random oracle model, ROM)下基于SM2签名的安全性给出适配器签名方案的可证明安全. 然后, 我们根据SM2签名的独特结构, 采用``离线证明技术''对SM2适配器签名进一步优化. 优化后的方案与现有ECDSA适配器签名方案(ECDSA-AS)~\cite{AumayrEEFHMMR20}相比, 在线预签名阶段的计算效率更高, 预签名尺寸更小. 随后, 我们对SM2适配器签名和ECDSA适配器签名进行理论和实验对比, 发现优化后的SM2适配器签名的在线预签名操作需要更少的点乘运算, 耗时仅为ECDSA适配器签名的1/4. 我们对相关技术介绍如下：
 
 \begin{trivlist}
 \item \textbf{SM2适配器签名.} SM2适配器签名是SM2签名和困难关系的扩展, 主要包含了预签名算法、预签名验证算法、适配算法、证据提取算法, 以及SM2的密钥生成算法、签名算法和签名验证算法. 其中, 预签名算法根据签名私钥和困难实例对消息进行预签名生成预签名值; 预签名验证算法可验证该预签名值的正确性; 适配算法可根据困难关系的证据将该预签名值转化为完整SM2签名值; 提取算法可根据预签名值和完整SM2签名值提取困难关系的证据. 具体而言, 令$(X,x)$为SM2签名算法的公私钥对, $(I=(Y,\pi),y)\in R_I$是离散对数困难关系~\cite{AumayrEEFHMMR20}. 签名方可计算预签名值: 计算点$Z=(x+1)Y$, 证明$X$和$Z-Y$具有相同的离散对数关系 ($Z-Y=xY, X=xG$): $\pi_Z\leftarrow \mathsf{P}((G,X,Y,Z-Y),x)$, 选择随机数$k$计算$\hat{K}=kG+Z=(k+y(x+1))G=\hat{k}G=(r_x,r_y)$, $r=r_x+h(m)$, $\hat{s}=(1+x)^{-1}(k-r\cdot x)$, 即预签名值$\hat{\sigma}=(r,\hat{s},Z,\pi_Z)$. 适配器算法可基于证据$y$将$\hat{\sigma}$转化为完整SM2签名值$\sigma=(r,s)$, 其中$s=\hat{s}+y=(x+1)^{-1}(k+y(x+1)-r\cdot x)=(x+1)^{-1}(\hat{k}-r\cdot x)$. 
 \end{trivlist}
 
 \begin{trivlist}
-\item \textbf{可证明安全.} SM2适配器签名采用具有在线提取器性质的非交互零知识证明~\cite{Fischlin05}提供的``自证明结构''~\cite{AumayrEEFHMMR20}保证可证明安全. 具体而言, $(I=(Y,\pi),y)\in R_I$是具有``自证明结构''的离散对数困难关系~\cite{AumayrEEFHMMR20}, 其中$\pi\leftarrow \mathsf{P}(Y,y)$证明存在证据$y$使得$Y=y\cdot G$. 因此, 根据困难关系的``自证明结构'', 在安全性证明中, 归约算法在随机预言机模型下能提取证据$y$, 然后可基于SM2签名预言机输出的完整签名值$\sigma=(r,s)$, 并通过计算$\hat{s}=s-y$模拟SM2适配器签名的预签名预言机. 因此，如果存在敌手可伪造SM2适配器签名的预签名值$\hat{\sigma}^*=(r^*,\hat{s}^*)$，则归约算法可根据提取的证据$y$伪造SM2的签名值$\sigma^*=(r^*,s^*), 其中 s^*=\hat{s}^*+y$, 打破SM2签名的安全性, 从而证明SM2适配器签名的安全性基于SM2签名的安全性.
+\item \textbf{可证明安全.} SM2适配器签名采用具有在线提取器性质的非交互零知识证明~\cite{Fischlin05}提供的``自证明结构''~\cite{AumayrEEFHMMR20}保证可证明安全. 具体而言, $(I=(Y,\pi),y)\in R_I$是具有``自证明结构''的离散对数困难关系~\cite{AumayrEEFHMMR20}, 其中$\pi\leftarrow \mathsf{P}(Y,y)$证明存在证据$y$使得$Y=y\cdot G$. 在安全性证明中, 根据困难关系的``自证明结构'',  归约算法在随机预言机模型下能提取证据$y$, 然后可基于SM2签名预言机输出的完整签名值$\sigma=(r,s)$, 并通过计算$\hat{s}=s-y$模拟SM2适配器签名的预签名预言机. 因此，如果存在敌手可伪造SM2适配器签名的预签名值$\hat{\sigma}^*=(r^*,\hat{s}^*)$，则归约算法可根据提取的证据$y$伪造SM2的签名值$\sigma^*=(r^*,s^*), 其中 s^*=\hat{s}^*+y$, 打破SM2签名的安全性, 从而证明SM2适配器签名的安全性基于SM2签名的安全性.
 \end{trivlist}
 
 \begin{trivlist}
-\item \textbf{离线证明优化技术.} SM2适配器签名和现有ECDSA适配器签名~\cite{AumayrEEFHMMR20}在预签名过程中都需要使用零知识证明保证其正确执行. 不同的是, 根据SM2签名的结构特点, SM2适配器签名的预签名阶段的零知识证明与消息值及预签名使用的随机数无关, 可以离线执行, 提升在线预签名操作的效率. 具体而言, 在预签名过程中, ECDSA-AS需要以预签名的随机数作为证据, 证明离散对数相等的困难关系$\{((G,K,Y,\hat{K}),k)|\exists\ k\in \mathbb{Z}_n,\ \text{s.t.}\ \hat{K}=kG\wedge K=kY\}$. 因此, 该证明只能由预签名方生成, 而且多次预签名计算需要选用不同的随机数, 即对于新的随机数需要进行新的零知识证明. 
+\item \textbf{离线证明优化技术.} SM2适配器签名和现有ECDSA适配器签名~\cite{AumayrEEFHMMR20}都需要使用零知识证明保证预签名的正确执行. 不同的是,  SM2适配器签名的零知识证明与消息值及预签名使用的随机数无关. 因此, 零知识证明部分可以离线执行, 提升在线预签名操作的效率. 具体而言, 在预签名过程中, ECDSA-AS需要以预签名的随机数作为证据, 证明离散对数相等的困难关系$\{((G,K,Y,\hat{K}),k)|\exists\ k\in \mathbb{Z}_n,\ \text{s.t.}\ \hat{K}=kG\wedge K=kY\}$. 因此, 该证明只能由预签名方生成, 而且多次预签名计算需要选用不同的随机数, 对于新的随机数需要进行新的零知识证明. 
 
 根据SM2签名的结构特点, 预签名过程可使用预签名私钥$x$作为证据, 证明离散对数相等的困难关系$\{((G,X,Y,Z),x)|\exists\ x\in \mathbb{Z}_n,\ \text{s.t.}\ X=xG\wedge Z-Y=xY\}$. 同时根据$Z=(x+1)Y=y(X+G)$的结构, 也能使用$y$为证据, 证明离散对数相等的困难关系$\{((G,Y,X+G,Z),y)|\exists\ y\in \mathbb{Z}_n,\ \text{s.t.}\ Z=y(X+G)\wedge Y=yG\}$. 根据$Z$结构的两种证明方式, 可对应SM2适配器签名更丰富且灵活的应用：(i) 以预签名私钥$x$为证据时, 关于$Z$结构的证明只能由预签名方生成（类似ECDSA-AS）;（ii）以$y$为证据时, 关于$Z$结构的证明可由困难关系选择方生成.
-因此, 我们可采用``离线证明技术''对SM2适配器签名进行优化, 设计更加高效的SM2适配器签名方案. 令SM2-ASv1和SM2-ASv2分别表示SM2适配器签名方案和其优化方案. SM2-ASv2采用离线证明技术并不影响其``自证明结构'', 可保证在安全性证明中归约算法提取证据$y$. 因此, 上述优化提升SM2适配器签名预签名阶段的效率, 并不影响SM2-ASv2的安全性.
+因此, 我们可采用``离线证明技术''对SM2适配器签名进行优化, 设计更加高效的SM2适配器签名方案. 令SM2-ASv1表示SM2适配器签名方案, SM2-ASv2表示优化后的SM2适配器签名方案. SM2-ASv2采用离线证明技术并不影响其``自证明结构'', 可保证在安全性证明中归约算法提取证据$y$. 因此, 上述优化提升SM2适配器签名预签名阶段的效率, 不影响SM2-ASv2的安全性.
 \end{trivlist}
 
 \begin{trivlist}
 \item \textbf{性能评估.} 我们分别通过理论和实验分析, 对现有ECDSA-AS~\cite{PA18,AumayrEEFHMMR20}, SM2-ASv1/2进行对比. 在线预签名阶段, ECDSA-AS需要证明离散对数相等关系, 
-而根据SM2签名算法特性, SM2-ASv2可进行离线证明, 因此适配器签名SM2-ASv2比ECDSA-AS~\cite{PA18,AumayrEEFHMMR20}更加高效. 随后, 我们基于OpenSSL, 分别实现了ECDSA-AS~\cite{AumayrEEFHMMR20}, SM2-ASv1/2, 主要对比了三种方案的在线预签名算法以及预签名验证算法的计算效率, 实验结果显示SM2-ASv2的在线预签名耗时仅为ECDSA-AS~\cite{AumayrEEFHMMR20}的1/4, 实验结果符合具体理论分析.
+而根据SM2签名算法特性, SM2-ASv2可进行离线证明, 因此适配器签名SM2-ASv2比ECDSA-AS~\cite{PA18,AumayrEEFHMMR20}更加高效. 随后, 基于OpenSSL, 我们实现了ECDSA-AS~\cite{AumayrEEFHMMR20}, SM2-ASv1/2, 对比了三种方案的在线预签名算法和预签名验证算法的计算效率.  实验结果显示SM2-ASv2的在线预签名耗时仅为ECDSA-AS~\cite{AumayrEEFHMMR20}的1/4, 实验结果符合具体理论分析.
 \end{trivlist}
 
 \begin{trivlist}
@@ -163,8 +164,9 @@ SM2签名算法~\cite{SM2,SM2-survey}是我国国家密码管理局公布的一�
 \subsection{符号}
 
 本文中, 用 $\mathbb{N}$ 表示自然数集, 用 $\lambda\in \mathbb{N}$ 表示安全参数. 对任意 $n \in \mathbb{N}$, 符号 $[1,n]$ 表示集合 $\{1,\cdots,n\}$. 对任意有限集 $X$, $x \leftarrow X$ 表示从 $X$ 中均匀随机地选取出一个元素 $x$. 
-关于安全参数 $\lambda$ 可忽略函数表示为 $\mathsf{negl}$, 如果 $\mathsf{negl}(\lambda) \geq 0$, 而且对任意正多项式 $\mathsf{poly}$, 均存在正整数 $c \in \mathbb{N}$, 使得对于所有的 $n \geq c$ 均满足 $\mathsf{negl}(n) \leq \frac{1}{\mathsf{poly}(c)}$.  
-对任意概率算法 $\mathcal{A}$, 记 $\mathcal{A}$ 所用的随机数集合为 $R$. $y \leftarrow \mathcal{A}(x_1,\cdots,x_t)$ 表示 $\mathcal{A}$ 以 $(x_1, \cdots, x_t)$ 为输入, 选取随机数 $r \leftarrow R$, 输出 $y$. 如果 $\mathcal{A}$ 的运行时间是关于安全参数 $\lambda$ 的多项式, 则称 $\mathcal{A}$ 为概率多项式时间(probabilistic polynomial time, PPT)算法. 
+
+关于安全参数 $\lambda$ 的函数$\mathsf{negl}$, 如果 $\mathsf{negl}(\lambda) \geq 0$, 而且对任意正多项式 $\mathsf{poly}$, 存在正整数 $c \in \mathbb{N}$, 使得对于所有的 $n \geq c$ 满足 $\mathsf{negl}(n) \leq \frac{1}{\mathsf{poly}(n)}$, 我们称函数$\mathsf{negl}$是可忽略的.   
+对任意概率算法 $\mathcal{A}$, 记 $\mathcal{A}$ 所用的随机数集合为 $R$. $y \leftarrow \mathcal{A}(x_1,\cdots,x_t;r)$ 表示 $\mathcal{A}$ 以 $(x_1, \cdots, x_t)$ 和随机数 $r\leftarrow R$为输入, 输出 $y$; 通常我们忽略$r$, 记为 $y \leftarrow \mathcal{A}(x_1,\cdots,x_t)$. 如果 $\mathcal{A}$ 的运行时间是关于安全参数 $\lambda$ 的多项式, 则称 $\mathcal{A}$ 为概率多项式时间(probabilistic polynomial time, PPT)算法. 
 
 
 \subsection{签名}
@@ -201,7 +203,6 @@ $\textbf{Adv}_{\mathcal{A},\text{sSigForge}}=$$\Pr[\text{sSigForge}_{\sum,\mathc
 
 
 \subsection{SM2签名}
-SM2签名算法~\cite{SM2,SM2-survey,ZhangYZC15}基于256比特素数域上的椭圆曲线. 
 令$\mathbb{G}$为椭圆曲线上的群, $G$为群$\mathbb{G}$中阶为$n$的基点. 随机选择签名私钥$x\in [1,n-2]$, 计算验证公钥$X=xG$. 为了方便, 本文省略SM2的编码部分, 具体可见SM2签名标准~\cite{SM2}. 
 
 关于消息$m \in \{0, 1\}^*$的SM2签名步骤如下: 
@@ -236,15 +237,13 @@ SM2签名算法是我国自主研发的签名算法, 具有安全性高, 运算�
   \item 对任意PPT\ 敌手$\mathcal{A}$, 输入困难实例$Y$输出证据$y$的概率是可忽略的.
 \end{itemize}
 
-对于困难关系$R$, 一组算法$(\mathsf{P},\mathsf{V})$是在随机预言机$\mathcal{H}$下具有在线提取器性质的非交互零知识知识的证明(non-interactive zero-knowledge proof of knowledge, NIZK-PoK)~\cite{AumayrEEFHMMR20,Fischlin05}, 需要满足以下条件: 
+对于困难关系$R$, 一组算法$(\mathsf{P},\mathsf{V})$是在随机预言机$\mathcal{H}$下具有在线提取器性质的非交互零知识的知识证明(non-interactive zero-knowledge proof of knowledge, NIZK-PoK)~\cite{AumayrEEFHMMR20,Fischlin05}, 需要满足以下条件: 
 
 \begin{itemize}
   \item 完备性: 对于任意困难关系$(Y,y)\in R$, $\pi\leftarrow \mathsf{P}^{\mathcal{H}}(Y,y)$, 存在可忽略函数$\mathsf{negl}$, 使得$\Pr[$$\mathsf{V}^{\mathcal{H}}$$(Y$, $\pi)$$=1]$$\geq$ $1-\mathsf{negl}(\lambda)$. 
   \item 零知识性: 对于任意困难关系$(Y,y)\in R$, 存在PPT的模拟器$\mathcal{S}$输入实例$Y$可模拟证明$\pi$.
   \item 在线提取器: 存在PPT提取算法$\mathsf{K}$, 输入实例和证明$(Y,\pi)$ 可访问随机预言机的询问序列以及对应回复, 能提取证据$y$, 满足$(Y,y)\in R$.  
 \end{itemize}
-
-具有在线提取器性质的NIZK-PoK的构造可参考~\cite{Fischlin05}.
 
 \subsection{适配器签名}
 关于困难关系$R=(Y,y)$和签名$\sum=(\mathsf{Gen}$,$\mathsf{Sign}$,$\mathsf{Vrfy})$的适配器签名$\sum_{AS}=($$\mathsf{pSign}$, $\mathsf{pVrfy}$, $\mathsf{Adapt}$, $\mathsf{Ext})$~\cite{AumayrEEFHMMR20}, 定义如下: 
@@ -261,7 +260,7 @@ SM2签名算法是我国自主研发的签名算法, 具有安全性高, 运算�
   提取算法输入签名值$\sigma$, 预签名值$\hat{\sigma}$和实例$Y$, 输出证据$y$.
 \end{itemize}
 
-适配器签名需要满足原签名的正确性, 还需要满足预签名的正确性, 以及预签名的可适配性. 简单来说, 预签名的正确性可保证诚实地生成关于实例$Y\in L_R$的预签名值能通过验证, 可被适配成一个有效的签名值, 并且能提取出实例$Y$的证据. 该性质保证实例$Y\in L_R$的预签名能被适配成一个有效的签名值, 当且仅当签名方知道实例$Y$的证据$y$. 预签名的可适配性保证任意有效的预签名值和实例$Y$的证据$y$可以适配成一个有效的签名值, 即使该实例$Y$、预签名值由预签名方恶意地生成. 因此, 预签名的可适配性比预签名的正确性更强. 
+适配器签名需要满足原签名的正确性, 还需要满足预签名的正确性, 以及预签名的可适配性. 简单来说, 预签名的正确性可保证签名方诚实地生成关于实例$Y\in L_R$的预签名值. 该预签名值能通过验证, 并且能被适配成一个有效的签名值. 基于该预签名值和适配后的完整签名值能提取出实例$Y$的证据. 该性质保证实例$Y\in L_R$的预签名能被适配成一个有效的签名值, 当且仅当签名方知道实例$Y$的证据$y$. 预签名的可适配性保证任意有效的预签名值和实例$Y$的证据$y$可以适配成一个有效的签名值, 即使该实例$Y$、预签名值由预签名方恶意地生成. 因此, 预签名的可适配性比预签名的正确性更强. 
 
 \begin{trivlist}
 \item \textbf{预签名正确性.}如果对任意的$\lambda\in \mathbb{N}$, $m\in\{0,1\}^*$, $(Y,y)\in R$有以下式子成立, 则称适配器签名满足预签名正确性.
@@ -316,7 +315,7 @@ aEUF–CMA, 其中$\text{aSigForge}_{\mathcal{A},\Pi_{R,\sum}}$定义如下:
 \end{tabular}}
 \end{center}
 
-适配器签名的 aEUF–CMA安全 类似 EUF–CMA 除了提供额外的预签名预言机$\mathcal{O}_{\text{pS}}(\cdot)$. 该预言机输入消息值和实例$Y$输出一个预签名值. 预签名预言机是非常关键的, 因为在应用中适配器签名要求敌手在不知道实例$Y$的证据的情况下, 即使知道预签名值也难以伪造消息的真实签名值. aEUF–CMA和预签名的可适配性一起保证了关于实例$Y$的预签名值能被转换成一个有效的签名值, 当且仅当知道实例$Y$的证据$y$. 
+除了提供额外的预签名预言机$\mathcal{O}_{\text{pS}}(\cdot)$, 适配器签名的 aEUF–CMA安全类似 EUF–CMA. 该预言机输入消息值和实例$Y$输出一个预签名值. 预签名预言机是非常关键的, 因为在应用中适配器签名要求敌手在不知道实例$Y$的证据的情况下, 即使知道预签名值也难以伪造消息的真实签名值. aEUF–CMA和预签名的可适配性一起保证了关于实例$Y$的预签名值能被转换成一个有效的签名值, 当且仅当知道实例$Y$的证据$y$. 
 
 \begin{trivlist}
 \item \textbf{证据可提取性.}对于任意的PPT敌手$\mathcal{A}$, 如果存在可忽略函数$\mathsf{negl}$, 使得在实验$\text{aWitExt}_{\mathcal{A},\Pi_{R,\sum}}$中敌手优势$\textbf{Adv}_{\mathcal{A},\text{aWitExt}}$$=$$\Pr[$$\text{aWitExt}_{\mathcal{A},\Pi_{R,\sum}}(\lambda) = 1] \leq \mathsf{negl}(\lambda)$, 则称适配器签名满足证据可提取性. $\text{aWitExt}_{\mathcal{A},\Pi_{R,\sum}}$定义如下: 
@@ -438,7 +437,7 @@ $K'=(s+r)X+sG=kG+y(1+x)G=kG+Z.$
 \end{lemma}
 
 \begin{proof}
-我们在ROM模型下将基于SM2的适配器签名的不可伪造性归约到SM2签名的强不可伪造性. 假设存在PPT敌手$\mathcal{A}$在aSigForge实验中, 打破基于SM2适配器签名的安全性, 则可构造模拟器$\mathcal{S}$打破SM2签名的强不可伪造性. 
+我们在ROM模型下将基于SM2的适配器签名的不可伪造性归约到SM2签名的强不可伪造性. 假设存在PPT敌手$\mathcal{A}$, 在aSigForge实验中, 打破SM2适配器签名的安全性, 则可构造模拟器$\mathcal{S}$打破SM2签名的强不可伪造性. 
 $\mathcal{S}$ 可以访问SM2签名预言机$\mathcal{O}_{\text{SM2-Sign}}$和随机预言机$\mathcal{H}_{\text{SM2}}$, 并且模拟$\mathcal{A}$的随机预言机($\mathcal{H}$), 签名预言机($\mathcal{O}_{\text{S}}$)和预签名预言机($\mathcal{O}_{\text{pS}}$). 
 
 $\mathcal{S}$可以通过$\mathcal{O}_{\text{SM2\text{-}Sign}}$和$\mathcal{H}_{\text{SM2}}$直接模拟$\mathcal{A}$的$\mathcal{O}_{\text{S}}$和$\mathcal{H}$的询问. 因为$\mathcal{S}$没有预签名私钥无法直接生成预签名值, 所以模拟$\mathcal{A}$的$\mathcal{O}_{\text{pS}}$较为困难. 具体挑战包括: 1) $\mathcal{S}$需要获得实例$Y$的证据$y$. 2) $\mathcal{S}$需要模拟在预签名阶段的零知识证明$\pi_Z$. 上述挑战可解决: 当$\mathcal{A}$询问$\mathcal{O}_{\text{pS}}$关于消息$m$和实例$I_Y = (Y, \pi_Y)$的预签名值时, 模拟器$\mathcal{S}$先询问自己的$\mathcal{O}_{\text{SM2\text{-}Sign}}$获得真实签名, 此外, $\mathcal{S}$通过证明$\pi_Y$提取证据$y$, 并根据适配器签名的定义, 基于证据$y$和真实签名值计算预签名值, 最后, 利用零知识性质, 在不知道证据$x$的情况下, 模拟证明$\pi_Z$. 即模拟器$\mathcal{S}$可模拟$\mathcal{A}$的$\mathcal{O}_{\text{pS}}$. 
@@ -486,7 +485,7 @@ $\mathcal{S}$可以通过$\mathcal{O}_{\text{SM2\text{-}Sign}}$和$\mathcal{H}_{
 
 模拟器$\mathcal{S}$获得挑战关系$I_Y^*$, 首先生成密钥对$(pk, sk)\leftarrow \mathsf{Gen}(1^\lambda)$, 并使用$\text{Game}_1$中的方式模拟$\mathcal{A}$的$\mathcal{H}$, $\mathcal{O}_{\text{S}}$ 和 $\mathcal{O}_{\text{pS}}$. 当收到$\mathcal{A}$的挑战消息$m$时, 计算并输出预签名值$\hat{\sigma}\leftarrow \mathsf{pSign}((pk,sk), m, I_Y^*)$, 敌手输出完整签名值$\sigma$. 
 
-假设事件$\text{Bad}_1$发生, 即$\mathsf{Adapt}(\hat{\sigma},y) = \sigma$, 因此$\mathcal{S}$可以提取证据$y^*\leftarrow\mathsf{Ext}(\sigma, \sigma^*, I_Y^*)$, 可获得$y^*$使得$(I_Y^*, y^*)\in R$成立. $\mathcal{A}$的视图和在$\text{Game}_1$中是不可区分的, 因此, $\mathcal{S}$能打破困难关系的概率和$\text{Bad}_1$发生的概率相同, 即$\Pr[\text{Bad}_1] \leq \mathsf{negl}_1(\lambda)$. 因为除了$\text{Bad}_1$发生, $\text{Game}_1$和$\text{Game}_0$是相同的, 所以 $|\Pr[\text{Game}_0 = 1]-\Pr[\text{Game}_1 = 1]|\leq \mathsf{negl}_1(\lambda).$
+假设事件$\text{Bad}_1$发生, 即$\mathsf{Adapt}(\hat{\sigma},y) = \sigma$, 因此$\mathcal{S}$可以提取证据$y^*\leftarrow\mathsf{Ext}(\sigma, \sigma^*, I_Y^*)$, 可获得$y^*$使得$(I_Y^*, y^*)\in R$成立. $\mathcal{A}$的视图和在$\text{Game}_1$中的视图是不可区分的, 因此, $\mathcal{S}$能打破困难关系的概率和$\text{Bad}_1$发生的概率相同, 即$\Pr[\text{Bad}_1] \leq \mathsf{negl}_1(\lambda)$. 因为除了$\text{Bad}_1$发生, $\text{Game}_1$和$\text{Game}_0$是相同的, 所以 $|\Pr[\text{Game}_0 = 1]-\Pr[\text{Game}_1 = 1]|\leq \mathsf{negl}_1(\lambda).$
 \end{proof}
 
 \begin{claim}
@@ -494,7 +493,7 @@ $\text{Game}_2$, $\text{Game}_3$和$\text{Game}_4$是不可区分的.
 \end{claim}
 
 \begin{proof}
-根据非交互零知识证明中在线提取器的正确性, 可根据实例$Y$, 及证明$\pi_Y$提取证据$y$, 使得$\mathsf{V}(Y, \pi_Y) \rightarrow 1$成立, 且$(I_Y, y) \in R$成立. 因此, $\text{Game}_2$ 和 $\text{Game}_1$是不可区分的, 即
+根据非交互零知识证明中在线提取器的正确性, 可基于实例$Y$及证明$\pi_Y$提取证据$y$, 使得$\mathsf{V}(Y, \pi_Y) \rightarrow 1$成立, 且$(I_Y, y) \in R$成立. 因此, $\text{Game}_2$ 和 $\text{Game}_1$是不可区分的, 即
 $|\Pr[\text{Game}_2 = 1] - \Pr[\text{Game}_1 = 1]|\leq \mathsf{negl}_2(\lambda).$
 
 根据非交互零知识证明的零知识性, 模拟器$\mathcal{S}$能够模拟证明$\pi_S$, 且$\pi_S\leftarrow \mathsf{S}((G,X,Y,Z),1)$和真实产生的证明$\pi_Z\leftarrow \mathsf{P}((G,X,Y,Z), x)$不可区分. 因此, $\text{Game}_3$ 和 $\text{Game}_2$是不可区分的, 即
@@ -509,7 +508,7 @@ $(m^*,\sigma^*)$ 是实验sSigForge中的有效伪造.
 \end{claim}
 
 \begin{proof}
-在挑战阶段之前, 敌手$\mathcal{A}$没有询问过$\mathcal{O}_{\text{S}}$ 或者 $\mathcal{O}_{\text{pS}}$关于挑战消息$m^*$的签名值或预签名值. 因此, 关于$m^*$对于$\mathcal{O}_{\text{SM2\text{-}Sign}}$的询问发生在挑战阶段, 根据$\text{Game}_1$可知, 敌手输出的伪造$\sigma^*$和$\mathcal{O}_{\text{SM2\text{-}Sign}}$输出的$\sigma$相同的概率是可忽略的. 因此, 关于$m^*$的询问, $\mathcal{O}_{\text{SM2\text{-}Sign}}$从没有输出过$\sigma^*$, 即$(m^*,\sigma^*)$ 是实验sSigForge中的有效伪造. 
+在挑战阶段之前, 敌手$\mathcal{A}$没有询问过$\mathcal{O}_{\text{S}}$ 或者 $\mathcal{O}_{\text{pS}}$关于挑战消息$m^*$的签名值或预签名值. 因此, 关于$m^*$对于$\mathcal{O}_{\text{SM2\text{-}Sign}}$的询问发生在挑战阶段. 根据$\text{Game}_1$可知, 敌手输出的伪造$\sigma^*$和$\mathcal{O}_{\text{SM2\text{-}Sign}}$输出的$\sigma$相同的概率是可忽略的. 因此, 关于$m^*$的询问, $\mathcal{O}_{\text{SM2\text{-}Sign}}$从没有输出过$\sigma^*$, 即$(m^*,\sigma^*)$ 是实验sSigForge中的有效伪造. 
 \end{proof}
 
 \begin{center}
@@ -572,9 +571,9 @@ return $\sigma$ &   &   \\
 
 \begin{proof}
 
-假设存在PPT敌手$\mathcal{A}$能以非可忽略的概率赢得aWitExt实验, 则可构造PPT的模拟器打破赢得SM2的sSigForge实验. 
+假设存在PPT敌手$\mathcal{A}$能以非可忽略的概率赢得aWitExt实验, 则可构造PPT的模拟器赢得SM2的sSigForge实验. 
 
-不同于实验aSigForge, 在实验aWitExt中, 由$\mathcal{A}$生成困难关系的实例$I_Y$. 因此, $\mathcal{S}$无法在挑战阶段生成证据$y$, 并通过SM2的签名值计算预签名值. 但是$\mathcal{S}$可通过NIZK的在线提取器的性质, 提取$I_Y$中的证据$y$. 因此, $\mathcal{S}$同样可模拟敌手的预签名值预言机$\mathcal{O}_{\text{pS}}$. 
+不同于实验aSigForge, 在实验aWitExt中, 由$\mathcal{A}$生成困难关系的实例$I_Y$. 因此, $\mathcal{S}$无法在挑战阶段生成证据$y$, 并通过SM2的签名值计算预签名值. 但是$\mathcal{S}$可通过NIZK的在线提取器的性质, 提取$I_Y$中的证据$y$. $\mathcal{S}$同样可模拟敌手的预签名值预言机$\mathcal{O}_{\text{pS}}$. 
 
 同样, 我们定义一系列的游戏$\text{Game}_0,\cdots,\text{Game}_4$, 其中$\text{Game}_0$是原aWitExt实验, 对于$i = 0,\cdots,3$,  $\text{Game}_i$ 和 $\text{Game}_{i+1}$ 是不可区分的, 且模拟器可完美的模拟$\text{Game}_4$, 最后证明敌手赢得最后游戏$\text{Game}_4$的概率是可忽略的. 
 
@@ -631,7 +630,7 @@ $(m^*,\sigma^*)$在sSigForge实验中是一个有效的伪造.
 \end{claim}
 
 \begin{proof}
-在挑战阶段之前, 敌手$\mathcal{A}$没有询问过$\mathcal{O}_{\text{S}}$ 或者 $\mathcal{O}_{\text{pS}}$关于挑战消息$m^*$的签名值或预签名值. 因此, 关于$m^*$对于$\mathcal{O}_{\text{SM2\text{-}Sign}}$的询问发生在挑战阶段. 如果在挑战阶段敌手输出的伪造$\sigma^*$和$\mathcal{O}_{\text{SM2\text{-}Sign}}$输出的$\sigma$相同, 则可提取证据$y=\hat{s}-s$使得$(I_Y, y) \in R$成立. 因此, 关于$m^*$的询问, $\mathcal{O}_{\text{SM2\text{-}Sign}}$从没有输出过$\sigma^*$, 即$(m^*,\sigma^*)$ 是实验sSigForge中的有效伪造. 
+在挑战阶段之前, 敌手$\mathcal{A}$没有询问过$\mathcal{O}_{\text{S}}$ 或者 $\mathcal{O}_{\text{pS}}$关于挑战消息$m^*$的签名值或预签名值. 关于$m^*$对于$\mathcal{O}_{\text{SM2\text{-}Sign}}$的询问发生在挑战阶段. 如果在挑战阶段敌手输出的伪造$\sigma^*$和$\mathcal{O}_{\text{SM2\text{-}Sign}}$输出的$\sigma$相同, 则可提取证据$y=\hat{s}-s$使得$(I_Y, y) \in R$成立. 因此, 关于$m^*$的询问, $\mathcal{O}_{\text{SM2\text{-}Sign}}$从没有输出过$\sigma^*$, 即$(m^*,\sigma^*)$ 是实验sSigForge中的有效伪造. 
 \end{proof}
 
 \begin{center}
@@ -697,7 +696,7 @@ return $\sigma$ &   &   \\
 
 \section{基于离线证明的SM2适配器签名} 
 
-本节中, 我们对SM2适配器签名SM2-ASv1进一步优化, 基于离线证明技术设计更加高效的SM2适配器签名. 根据$Z=(x+1)Y=y(X+G)$的结构, $Z$的证明可分别以$x$和$y$为证据进行证明. 其中, 以$x$为证据, 该证明只能由预签名方生成; 以$y$为证据, 该证明可由困难关系生成方生成. 
+本节中, 我们对SM2适配器签名SM2-ASv1进一步优化, 基于离线证明技术设计更加高效的SM2适配器签名. 根据$Z=(x+1)Y=y(X+G)$, 可分别以$x$和$y$为证据证明$Z$的结构, 其中, 以$x$为证据, 该证明只能由预签名方生成; 以$y$为证据, 该证明可由困难关系生成方生成. 
 
 根据SM2-ASv1, 该方案主要包含了两对困难关系$((Y, \pi_Y),y)$和$((G,X,Y,Z),x)$的零知识证明, 其中$((Y, \pi_Y),y)$的证明可由困难关系生成方离线生成并证明, 后者在预签名算法阶段以预签名私钥$x$为证据, 证明离散对数相等的困难关系$\{((G,X,Y,Z),x)|\exists\ x\in \mathbb{Z}_n,\ \text{s.t.}\ X=xG \wedge Z-Y=xY\}$. 根据SM2签名算法特点, $((G,X,Y,Z),x)$的证明过程与预签名过程中的随机数选择以及签名消息是独立的, 该部分可由预签名方在离线阶段执行.  离线证明构造较为直观, 即预签名方在接收(或生成)困难关系$(Y,\pi_Y)$后, 先离线生成$Z$并进行离线证明, 后续对消息$m$进行预签名时, 再选择随机数并生成预签名值. 因此, 该方案可根据SM2-ASv1直接得到. 同时, 该过程依旧保持困难关系$((Y,\pi_Y),y)$的自证明结构, 并不影响SM2适配器签名算法的安全性.
 
@@ -705,7 +704,7 @@ return $\sigma$ &   &   \\
 $R= \{(I=(G,I_Y=(Y,\pi_Y),X,Z,\pi),y)|\exists\ y\in \mathbb{Z}_n,\ \text{s.t.}\ Y = yG \wedge Z-Y = yX\wedge \mathsf{V}(I) \rightarrow 1\}$, 其中$\mathsf{P}$和$\mathsf{V}$分别表示零知识证明中的证明和验证算法. 基于SM2的适配器签名算法构造如下: 
 
 \begin{itemize}
-\item $\mathsf{pSign}((X,x),m,I)\rightarrow \hat{\sigma}$. 预签名算法输入公私钥对 $(X$,$x)$, 消息值 $m$ 和困难实例 $I$=$(G$, $I_Y$, $X$, $Z$, $\pi)$, 可离线验证$I$, 如果$\mathsf{V}(I)\rightarrow 0$, 输出$\bot$, 否则计算 $e=H(m)$, 选择随机数$k\leftarrow \mathbb{Z}_n$, 并计算 $\hat{K}=kG+Z$, $r_x=f(\hat{K})$, $r=e+r_x$, $\hat{s}=(1+x)^{-1}(k-rx) \bmod n$, 最后输出预签名值$\hat{\sigma}=(r,\hat{s})$.
+\item $\mathsf{pSign}((X,x),m,I)\rightarrow \hat{\sigma}$. 预签名算法输入公私钥对 $(X$,$x)$, 消息值 $m$ 和困难实例 $I$=$(G$, $I_Y$, $X$, $Z$, $\pi)$, 可离线验证$I$. 如果$\mathsf{V}(I)\rightarrow 0$, 输出$\bot$, 否则计算 $e=H(m)$, 选择随机数$k\leftarrow \mathbb{Z}_n$, 并计算 $\hat{K}=kG+Z$, $r_x=f(\hat{K})$, $r=e+r_x$, $\hat{s}=(1+x)^{-1}(k-rx) \bmod n$, 最后输出预签名值$\hat{\sigma}=(r,\hat{s})$.
 
 \item $\mathsf{pVrfy}(X,m,I,\hat{\sigma})\rightarrow 0/1$. 预签名验证算法输入公钥 $X$, 消息$m$, 困难实例$I=(G,I_Y,X,Z,\pi)$, 以及预签名值 $\hat{\sigma}=(r,\hat{s})$, 可离线验证$I$, 如果$\mathsf{V}(I)\rightarrow 0$, 输出$\bot$,  否则计算$e=H(m)$, $\hat{K}=(\hat{s}+r)X+\hat{s}G+Z$, $r'=f(\hat{K})+e \bmod n$. 如果 $r'=r$, 该算法输出 $1$, 否则输出 $0$. 
 
@@ -743,13 +742,13 @@ $\hat{s}=(1+x)^{-1}(k-rx) \bmod n$ &  else, output $0$. &  else outputs $\bot$ \
 \label{SM2-based adaptor signature scheme with offline proof}
 \end{figure}
 
-本节主要构造的SM2适配器签名, 如图~\ref{SM2-based adaptor signature scheme with offline proof}所示, 困难关系$I$包含$Y=yG$和$Z=y(X+G)$, 皆以$y$为证据, 具体的零知识证明可由困难关系生成方生成. 因此, 预签名方接收到该困难实例$I$可直接离线验证其正确性, 随后需要对消息进行预签名时, 根据离线验证的$Y, Z$, 并选择随机数对消息进行预签名. 该方法可避免在线预签名阶段中计算$Z$并通过零知识证明其结构, 因此与在线SM2-ASv1和现有的ECDSA-AS相比较, SM2-ASv2在线预签名的计算效率更高. 由于$Z$的零知识证明加入到离线证明的困难关系中, 预签名中不需要过多的包含$Z$的信息.  因此, SM2-ASv2的签名值更小. 同样, 根据对SM2-ASv2的分析, 离线证明过程依旧保证自证明结构$((Y, \pi_Y),y)$, 并不影响适配器签名的安全性, 具体分析可参考SM2-ASv1.
+本节主要构造的SM2适配器签名, 如图~\ref{SM2-based adaptor signature scheme with offline proof}所示, 困难实例$I$包含$Y=yG$和$Z=y(X+G)$, 皆以$y$为证据, 具体的零知识证明可由困难关系生成方生成. 因此, 预签名方接收到该困难实例$I$可直接离线验证其正确性, 随后需要对消息进行预签名时, 根据离线验证的$Y, Z$, 并选择随机数对消息进行预签名. 该方法避免了在线预签名阶段中计算$Z$的过程, 并可通过零知识证明其结构, 与在线SM2-ASv1和现有的ECDSA-AS相比较, SM2-ASv2在线预签名的计算效率更高. 由于$Z$的零知识证明加入到离线证明的困难关系中, 预签名中不需要过多的包含$Z$的信息.  因此, SM2-ASv2的签名值更小. 同样, 根据对SM2-ASv2的分析, 离线证明过程依旧保证自证明结构$((Y, \pi_Y),y)$, 不影响适配器签名的安全性, 具体分析可参考SM2-ASv1.
 
 \section{方案效率和实验结果} 
 
 \subsection{理论分析}
 
-本节分析现有基于ECDSA的适配器签名和基于SM2的适配器签名, 分别在通信成本和计算效率两个方面进行对比, 具体可见表~\ref{table1}. 在进行计算效率对比时, 我们主要考虑了较为复杂的点乘运算, 忽略了其它较为简单的运算, 如点加运算等. Moreno{-}Sanchez等~\cite{PA18}提出的首个ECDSA-AS并未给出可证明安全. 随后Aumayr等~\cite{AumayrEEFHMMR20}在~\cite{PA18}的基础上, 提出自证明结构$\{(I_Y=(Y, \pi_Y), y) | Y = yG \wedge \mathsf{V}(Y, \pi_Y) \rightarrow 1\}$, 并给出了可证明安全的ECDSA-AS. 但是该方案在预签名过程中, 以签名随机数为证据, 证明满足离散对数相等的困难关系$\{((G,\hat{K},Y,K),k)|\exists\ k\in \mathbb{Z}_n,\ \text{s.t.}\ \hat{K}=kG\wedge K=kY\}$, 一方面该部分只能由签名方生成 (预签名随机数由签名方生成), 无法由其他方离线生成, 需要4次点乘操作.  另一方面每次重新进行预签名, 需要选择新的随机数 (不同的预签名值需要新的随机数), 也需要重新进行零知识证明. 因此, 该方案的预签名过程更加复杂, 应用不够灵活. 
+本节分析现有基于ECDSA的适配器签名和基于SM2的适配器签名, 分别在通信成本和计算效率两个方面进行对比, 具体结果可见表~\ref{table1}. 在进行计算效率对比时, 我们主要考虑了较为复杂的点乘运算, 忽略了其它较为简单的运算, 如点加运算等. Moreno{-}Sanchez等~\cite{PA18}提出的首个ECDSA-AS并未给出可证明安全. 随后Aumayr等~\cite{AumayrEEFHMMR20}在~\cite{PA18}的基础上, 提出自证明结构$\{(I_Y=(Y, \pi_Y), y) | Y = yG \wedge \mathsf{V}(Y, \pi_Y) \rightarrow 1\}$, 并给出了可证明安全的ECDSA-AS. 但是该方案在预签名过程中, 以签名随机数为证据, 证明满足离散对数相等的困难关系$\{((G,\hat{K},Y,K),k)|\exists\ k\in \mathbb{Z}_n,\ \text{s.t.}\ \hat{K}=kG\wedge K=kY\}$.  一方面该部分只能由签名方生成 (预签名随机数由签名方生成), 无法由其他方离线生成, 需要4次点乘操作.  另一方面每次重新进行预签名, 需要选择新的随机数 (不同的预签名值需要新的随机数), 也需要重新进行零知识证明. 因此, 该方案的预签名过程更加复杂, 应用不够灵活. 
 
 我们沿用现有自证明结构~\cite{AumayrEEFHMMR20}设计了基于SM2的适配器签名SM2-ASv1. 该方案在预签名过程中以签名私钥为证据, 需要证明满足离散对数相等的困难关系$\{((G,X,Y,Z),x)|\exists\ x\in \mathbb{Z}_n,\ \text{s.t.}\ X=xG \wedge Z-Y=xY\}$. 基于SM2签名算法的结构特性, 我们设计了支持离线证明的SM2适配器签名SM2-ASv2. 一方面, SM2-ASv1中关于$Z$结构的零知识证明可由签名方拿到困难实例$I_Y$后离线进行, 提升在线预签名操作的效率; 另一方面, 还能以$y$为证据, 证明$Z$的结构$\{((G,Y,X,Z),y)|\exists\ y\in \mathbb{Z}_n,\ \text{s.t.}\ Y = yG \wedge Z-G = yX\}$. 该证明与预签名随机数和消息无关, 对于一个困难关系可以进行多次预签名, 而且该部分证明可由困难关系生成方离线证明. 因此, SM2-ASv2避免了在线签名阶段对于$Z$结构的零知识证明, 只需要1次点乘操作, 较大的提升了在线预签名的效率.
 
@@ -884,13 +883,13 @@ SM2-ASv2 & $|\mathbb{G}|$ & $|\mathbb{Z}_n|$  & $2|\mathbb{Z}_n|$ & Exp & 6Exp &
 
 \subsection{原子交换协议}
 
-原子交换协议 (atomic swap) 能在无可信第三方的情况下公平地实现不同密码货币之间的交换. 即用户$U_1$和$U_2$想要公平地交换不同的密码货币$c_1$和$c_2$, 其中公平性体现在双方完成交换或者双方都交换失败. 最初, 原子交换协议~\cite{Nolan2013}基于哈希函数和时间锁(timelock)设计, 可实现拥有哈希函数原像才能提取货币的功能, 时间锁保证后提取货币的用户有足够的时间进行货币提取, 但该方法要求密码货币的两种脚本语言都支持哈希原像条件脚本(preimage conditioned scripts). 随后, Poelstra~\cite{Poelstra2017}将哈希条件嵌入到签名算法中, 给出了该协议的无脚本版本. 因此, 基于适配器签名设计原子交换协议框架~\cite{Nolan2013,Poelstra2017,EsginEE20}, 在现有基于SM2签名算法的区块链应用中, 可使用SM2的适配器签名构造原子交换协议, 具体如图~\ref{Atomic swap protocol based on SM2-based adaptor signature}所示: 
+原子交换协议 (atomic swap) 能在无可信第三方的情况下公平地实现不同密码货币之间的交换. 用户$U_1$和$U_2$想要公平地交换不同的密码货币$c_1$和$c_2$, 其中公平性体现在双方完成交换或者双方都交换失败. 最初, 原子交换协议~\cite{Nolan2013}基于哈希函数和时间锁(timelock)设计, 可实现拥有哈希函数原像才能提取货币的功能, 时间锁保证后提取货币的用户有足够的时间进行货币提取, 但该方法要求密码货币的两种脚本语言都支持哈希原像条件脚本(preimage conditioned scripts). 随后, Poelstra~\cite{Poelstra2017}将哈希条件嵌入到签名算法中, 给出了该协议的无脚本版本. 因此, 基于适配器签名设计原子交换协议框架~\cite{Nolan2013,Poelstra2017,EsginEE20}, 在现有基于SM2签名算法的区块链应用中, 可使用SM2的适配器签名构造原子交换协议, 具体如图~\ref{Atomic swap protocol based on SM2-based adaptor signature}所示: 
 
 \begin{itemize}
 
-\item 协议建立阶段: $U_1$运行$\mathsf{GenR}(1^\lambda)\rightarrow (Y,y)$生成困难关系$(Y,y)$, 计算零知识证明$\mathsf{P}(Y,y)\rightarrow \pi$, 令$I=(Y,\pi)$. 生成关于传输货币$c_1$给$U_2$的预交易$tx_1$, 并生成预签名$\hat{\sigma_1}\leftarrow \mathsf{pSign}((X_1,x_1), tx_1, I)$; 将$I, \hat{\sigma_1}, tx_1$发送给$U_2$; $U_2$可验证困难实例$I$和预签名值$\hat{\sigma_1}$, 如果$\mathsf{V}(I)\rightarrow 0$或者$\mathsf{pVrfy}$$(X_1$, $tx_1$, $I$, $\hat{\sigma_1})$$\rightarrow 0$, 拒绝交易, 否则生成关于传输货币$c_2$给$U_1$的预交易$tx_2$, 并生成预签名$\hat{\sigma_2}$$\leftarrow$$\mathsf{pSign}$$((X_2$, $x_2)$, $tx_2$, $I)$; 将$\hat{\sigma_2},tx_2$发送给$U_1$;
+\item 协议建立阶段: $U_1$运行$\mathsf{GenR}(1^\lambda)\rightarrow (Y,y)$生成困难关系$(Y,y)$, 计算零知识证明$\mathsf{P}(Y,y)\rightarrow \pi$, 令$I=(Y,\pi)$. 生成关于传输货币$c_1$给$U_2$的预交易$tx_1$, 并生成预签名$\hat{\sigma_1}\leftarrow \mathsf{pSign}((X_1,x_1), tx_1, I)$; 将$I, \hat{\sigma_1}, tx_1$发送给$U_2$; $U_2$可验证困难实例$I$和预签名值$\hat{\sigma_1}$, 如果$\mathsf{V}(I)\rightarrow 0$或者$\mathsf{pVrfy}$$(X_1$, $tx_1$, $I$, $\hat{\sigma_1})$$\rightarrow 0$, 拒绝交易;  否则生成关于传输货币$c_2$给$U_1$的预交易$tx_2$, 并生成预签名$\hat{\sigma_2}$$\leftarrow$$\mathsf{pSign}$$((X_2$, $x_2)$, $tx_2$, $I)$; 将$\hat{\sigma_2},tx_2$发送给$U_1$;
 
-\item 交换阶段: $U_1$验证预签名值, 如果 $\mathsf{pVrfy}(X_2$, $tx_2$, $I$, $\hat{\sigma_2})$$\rightarrow 0$, 则拒绝交易, 否则根据证据$y$, 运行适配算法$\sigma_2\leftarrow \mathsf{Adapt}(\hat{\sigma_2},y)$将$U_2$的预签名适配成SM2签名, 即获得$U_2$传输货币$c_2$给$U_1$的SM2签名值$\sigma_2$, 在链上公布$\sigma_2$可获得$c_2$; $U_2$获得签名值$\sigma_2$, 运行提取算法获得证据$y\leftarrow \mathsf{Ext}(\sigma_2,\hat{\sigma_2}, I)$, 并运行适配算法$\sigma_1\leftarrow \mathsf{Adapt}(\hat{\sigma_1},y)$, 获得$U_1$传输货币$c_1$给$U_2$的SM2签名值$\sigma_1$, 在链上公布$\sigma_1$获得$c_1$.
+\item 交换阶段: $U_1$验证预签名值, 如果 $\mathsf{pVrfy}(X_2$, $tx_2$, $I$, $\hat{\sigma_2})$$\rightarrow 0$, 则拒绝交易; 否则根据证据$y$, 运行适配算法$\sigma_2\leftarrow \mathsf{Adapt}(\hat{\sigma_2},y)$将$U_2$的预签名适配成SM2签名, 即获得$U_2$传输货币$c_2$给$U_1$的SM2签名值$\sigma_2$, 在链上公布$\sigma_2$可获得$c_2$; $U_2$获得签名值$\sigma_2$, 运行提取算法获得证据$y\leftarrow \mathsf{Ext}(\sigma_2,\hat{\sigma_2}, I)$, 并运行适配算法$\sigma_1\leftarrow \mathsf{Adapt}(\hat{\sigma_1},y)$, 获得$U_1$传输货币$c_1$给$U_2$的SM2签名值$\sigma_1$, 在链上公布$\sigma_1$获得$c_1$.
 \end{itemize}
 
 
@@ -916,7 +915,7 @@ Publish $\sigma_2$ on blockchain& & $\xrightarrow{\sigma_2}$&  & $y'\leftarrow \
 \end{figure*}
 
 \subsection{支付通道网络}
-支付通道网络(payment channel network, PCN)~\cite{DeckerW15,PD2016,PC2018,MalavoltaMSKM19,AumayrEEFHMMR20}是目前解决区块链可扩展性差, 吞吐量低的主流方案. 具体地说, 区块链上每笔交易需要各方(矿工)认可和存储, 导致与信用卡相比, 交易吞吐量较差, 但PCN可通过将部分交易移到链下来提高吞吐量. 在PCN中, 交易双方可将货币锁定在一个通道中, 只要有足够的余额, 就可以进行即时和任意多次的交易. 目前, 最受欢迎的PCN应用是基于比特币的闪电网络~\cite{PD2016}. PCN允许各方进行多跳支付, 即没有直接通道的参与方可以使用中介节点的通道来实现支付. 在多跳支付中, 各方需要同步路线上每个通道信息, 要求所有通道都同步更新, 或者都不更新. 闪电网络通过使用哈希锁合约(hash-time lock contract, HTLC)实现上述要求. 然而, Malavolta等~\cite{MalavoltaMSKM19}提出虫洞攻击可破坏HTLC机制的安全性, 并基于ECDSA适配器签名构造匿名多跳锁(anonymous multi-hop lock, AMHL)构建了安全的PCN.
+支付通道网络(payment channel network, PCN)~\cite{DeckerW15,PD2016,PC2018,MalavoltaMSKM19,AumayrEEFHMMR20}是目前解决区块链可扩展性差, 吞吐量低的主流方案. 具体地说, 区块链上每笔交易需要各方(矿工)认可和存储, 导致交易吞吐量较差, 但PCN可通过将部分交易移到链下来提高吞吐量. 在PCN中, 交易双方可将货币锁定在一个通道中, 只要有足够的余额, 就可以进行即时和任意多次的交易. 目前, 最受欢迎的PCN应用是基于比特币的闪电网络~\cite{PD2016}. PCN允许各方进行多跳支付, 即没有直接通道的参与方可以使用中介节点的通道来实现支付. 在多跳支付中, 各方需要同步路线上每个通道信息, 要求所有通道都同步更新, 或者都不更新. 闪电网络通过使用哈希锁合约(hash-time lock contract, HTLC)实现上述要求. 然而, Malavolta等~\cite{MalavoltaMSKM19}提出虫洞攻击可破坏HTLC机制的安全性, 并基于ECDSA适配器签名构造匿名多跳锁(anonymous multi-hop lock, AMHL)构建了安全的PCN.
 
 在现有基于SM2签名算法的区块链应用中, 我们可使用SM2的适配器签名, 采用Malavolta等~\cite{MalavoltaMSKM19,EsginEE20}的构造框架, 实现PCN的多跳支付. 具体应用中, 发送者$S$(或$U_0$)通过中介节点$U_1,\cdots,U_{k−1}$向接收方$R$(或$U_k$)进行支付, 为了方便, 我们省略中介节点的费用, 令$(X_j, x_j)$是$U_j$的SM2签名公私钥对, $G$是阶为$n$的基点, $tx_j$是指$U_j$到$U_{j+1}$交易. 具体协议如图~\ref{Multi-hop payments based on SM2-based adaptor signature}: 
 
